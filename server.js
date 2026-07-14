@@ -10,6 +10,7 @@ const app = express();
 const mongoose = require("mongoose");
 const methodOverride = require("method-override");
 const morgan = require("morgan");
+const session = require('express-session')
 
 const authCtrl = require('./controllers/auth')
 // Set the port from environment variable or default to 3000
@@ -28,6 +29,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(methodOverride("_method"));
 // Morgan for logging HTTP requests
 app.use(morgan('dev'));
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+}))
 
 
 app.get('/auth/home', authCtrl.home)
@@ -36,9 +42,11 @@ app.post('/auth/sign-up', authCtrl.signUp)
 app.get('/auth/sign-in', authCtrl.showSignInForm)
 app.post('/auth/sign-in', authCtrl.signIn)
 
-// app.get('/', (req, res) => {
-//     res.render('home.ejs')
-// })
+app.get('/', (req, res) => {
+    res.render('home.ejs',{
+        user: req.session.user,
+    })
+})
 
 
 app.listen(port, () => {

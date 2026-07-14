@@ -43,8 +43,11 @@ const signIn = async (req,res) =>{
     if(!validPassword){
         return res.send('Login Failed.')
     }
-    console.log(req.body)
-    res.send('signed in')
+    req.session.user = {
+        username : userInDatabase.username,
+        _id: userInDatabase._id,
+    }
+    res.redirect('/')
 }
 
 module.exports = {
